@@ -37,7 +37,12 @@ public class CourseController{
     @PostMapping( value = {"/profesor/crear-curso"} )
     public ResponseEntity<Void> createCourse( @RequestBody CoursePOJO coursePojo ){
         Course course = courseService.mapperCourseEntity( coursePojo );
-        if( !courseService.isRightCourse( course ) ){
+        String username = SecurityContextHolder.getContext( ).getAuthentication( ).getName( );
+        User user = userService.findByUsername( username );
+        List role = user.getRoles();
+
+        //&& !user.hasRole(role)
+        if( !courseService.isRightCourse( course ) && !role.contains(2)){
             return new ResponseEntity<>( HttpStatus.BAD_REQUEST );
         }
         courseService.save( course );
